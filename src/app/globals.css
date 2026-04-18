@@ -6,11 +6,11 @@ html {
 }
 
 :root {
-  --background: #03050f;
-  --foreground: #f4f4f5;
-  --surface-muted: #080d1a;
-  --accent: #6366f1;
-  --accent-light: #818cf8;
+  --background: #FAF9F6;
+  --foreground: #111827;
+  --surface-muted: #F3F4F6;
+  --accent: #b642f8;
+  --accent-navy: #0f0f45;
 }
 
 @theme inline {
@@ -34,9 +34,26 @@ body {
 }
 
 .glass-panel {
-  border: 1px solid rgb(255 255 255 / 0.08);
-  background: rgb(5 10 24 / 0.55);
+  border: 1px solid rgb(0 0 0 / 0.05);
+  background: rgb(255 255 255 / 0.7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 1px 0 rgb(255 255 255 / 0.06) inset;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
 }
+
+@keyframes flow-bg {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+@keyframes smoke-text {
+  0% { background-position: 0% 0%, 0% 0%, 0% 0%; }
+  50% { background-position: 100% 50%, 50% 100%, 0% 50%; }
+  100% { background-position: 0% 0%, 0% 0%, 0% 0%; }
+}
+
+.animate-smoke-text {
+  background-size: 200% 200%;
+  animation: smoke-text 12s ease-in-out infinite;
+}
+

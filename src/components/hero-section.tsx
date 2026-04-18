@@ -2,7 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useMemo } from "react";
 
 export type HeroThumbnail = {
   src: string;
@@ -36,10 +37,40 @@ export function HeroSection({
   ctaHref = "/contact",
   ctaLabel = "Discover more",
 }: HeroSectionProps) {
+  const [waveImpact, setWaveImpact] = useState(0); // 0 to 1 intensity
+
+  useEffect(() => {
+    let raf: number;
+    const startTime = Date.now();
+    
+    const update = () => {
+      const iTime = (Date.now() - startTime) / 1000;
+      const waveDuration = 10.0; // Synced with shader
+      const waveTime = iTime % waveDuration;
+      // Mirror the shader's Gaussian wavePos logic: 1.3 -> -0.5
+      const wavePos = 1.3 - (waveTime / (waveDuration * 0.5));
+      
+      // We want to trigger the glisten when the Gaussian wavePos is over the text
+      // Text is roughly at uv.x [0.1, 0.5]. 
+      // This maps wavePos directly to a normalized impact on the text.
+      setWaveImpact(wavePos);
+      
+      raf = requestAnimationFrame(update);
+    };
+    
+    raf = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  function smoothstep(min: number, max: number, value: number) {
+    const x = Math.max(0, Math.min(1, (value - min) / (max - min)));
+    return x * x * (3 - 2 * x);
+  }
+
   return (
-    <section className="relative min-h-dvh w-full overflow-hidden bg-[#03050f]">
+    <section className="relative min-h-dvh w-full overflow-hidden bg-background">
       {/* Full-bleed character image or custom bg — right portion */}
-      <div className="absolute inset-0 z-0 bg-black">
+      <div className="absolute inset-0 z-0 bg-background">
         {bgComponent ? (
           bgComponent
         ) : (
@@ -54,77 +85,64 @@ export function HeroSection({
             />
           )
         )}
-        {/* Left dark gradient so text stays readable */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black from-[20%] via-black/75 via-[45%] to-transparent pointer-events-none" />
-        {/* Top vignette */}
-        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black to-transparent pointer-events-none" />
-        {/* Bottom vignette */}
-        <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-black to-transparent pointer-events-none" />
-        {/* Indigo atmospheric glow */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_55%_65%_at_72%_45%,rgba(99,102,241,0.15),transparent_65%)]" />
+        {/* Left-side mask to fade out the WebGL lines, ensuring they emerge smoothly from the right side and text is highly readable */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#FAF9F6] from-[15%] via-[#FAF9F6]/80 via-[40%] to-[rgba(250,249,246,0)]" />
       </div>
 
       {/* Content layer */}
       <div className="relative z-10 flex min-h-dvh flex-col">
         {/* Giant typography */}
         <div className="flex flex-1 flex-col justify-center px-6 pb-8 pt-28 sm:px-10 sm:pt-32 lg:px-16">
-          <motion.span
-            className="block font-anton text-[clamp(2.8rem,11vw,8rem)] uppercase leading-[0.88] tracking-tight text-white/[0.08]"
+          <motion.div
+            className="relative"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease }}
           >
-            {wordOne}
-          </motion.span>
-          <motion.span
-            className="block font-anton text-[clamp(4.5rem,19vw,14rem)] uppercase leading-[0.85] tracking-tight text-white"
+            <span 
+              className="block font-sans font-bold text-[clamp(2.5rem,7vw,5.5rem)] uppercase leading-[0.9] tracking-tight bg-clip-text text-transparent"
+              style={{
+                backgroundImage: `linear-gradient(to right, #E2E1DD 0%, #E2E1DD ${Math.max(0, waveImpact * 100 - 15)}%, #0f0f45 ${waveImpact * 100}%, #E2E1DD ${Math.min(100, waveImpact * 100 + 15)}%, #E2E1DD 100%)`,
+                WebkitBackgroundClip: 'text',
+              }}
+            >
+              {wordOne}
+            </span>
+          </motion.div>
+
+          <motion.div
+            className="relative"
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.9, delay: 0.08, ease }}
           >
-            {wordTwo}
-          </motion.span>
-        </div>
-
-        {/* Bottom info bar */}
-        <motion.div
-          className="grid gap-6 border-t border-white/10 bg-black/25 px-6 py-6 backdrop-blur-sm sm:grid-cols-2 sm:items-center sm:px-10 lg:px-16"
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.35, ease }}
-        >
-          {/* Thumbnails */}
-          <div className="flex gap-2.5">
-            {thumbnails.map((t, i) => (
-              <div
-                key={i}
-                className="relative h-14 w-14 overflow-hidden rounded-xl border border-white/15 shadow-md sm:h-[3.75rem] sm:w-[3.75rem]"
-              >
-                <Image
-                  src={t.src}
-                  alt={t.alt}
-                  fill
-                  className="object-cover object-[70%_center]"
-                  sizes="72px"
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Right info */}
-          <div className="sm:text-right">
-            <p className="text-base font-semibold text-white sm:text-lg">{sectionLabel}</p>
-            <p className="mt-1.5 max-w-xs text-sm leading-relaxed text-zinc-400 sm:ml-auto">
+            <span 
+              className="block font-sans font-bold text-[clamp(3.5rem,11vw,9rem)] uppercase leading-[0.9] tracking-tight bg-clip-text text-transparent drop-shadow-sm"
+              style={{
+                backgroundImage: `linear-gradient(to right, black 0%, black ${Math.max(0, waveImpact * 100 - 10)}%, #0f0f45 ${waveImpact * 100}%, black ${Math.min(100, waveImpact * 100 + 10)}%, black 100%)`,
+                WebkitBackgroundClip: 'text',
+              }}
+            >
+              {wordTwo}
+            </span>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease }}
+            className="mt-4 sm:mt-5 max-w-lg"
+          >
+            <p className="text-base sm:text-lg text-zinc-500 leading-snug">
               {sectionBody}
             </p>
             <Link
               href={ctaHref}
-              className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-6 py-2.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:border-indigo-400/50 hover:bg-indigo-500/20"
+              className="mt-8 inline-flex items-center gap-2 rounded-full border border-[#b642f8]/20 bg-[#b642f8] px-8 py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-[#b642f8]/90"
             >
               {ctaLabel} <span aria-hidden>→</span>
             </Link>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

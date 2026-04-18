@@ -24,10 +24,12 @@ const FS_SOURCE = `
   const float axisWidth = 0.05;
   const float majorLineWidth = 0.025;
   const float minorLineWidth = 0.0125;
-  const float majorLineFrequency = 5.0;
-  const float minorLineFrequency = 1.0;
   const float scale = 5.0;
-  const vec4 lineColor = vec4(0.35, 0.42, 1.0, 1.0);
+  // Subtle zinc/silver base color
+  const vec4 baseLineColor = vec4(0.70, 0.70, 0.75, 1.0);
+  // Brand navy color for the wave impact (#0f0f45)
+  const vec4 activeLineColor = vec4(0.059, 0.059, 0.27, 1.0);
+  
   const float minLineWidth = 0.01;
   const float maxLineWidth = 0.2;
   const float lineSpeed = 1.0 * overallSpeed;
@@ -56,8 +58,19 @@ const FS_SOURCE = `
 
   void main() {
     vec2 fragCoord = gl_FragCoord.xy;
-    vec4 fragColor;
     vec2 uv = fragCoord.xy / iResolution.xy;
+    
+    // Wave animation: smooth Gaussian pulse flowing right-to-left
+    float waveDuration = 10.0; // Slower, more elegant
+    float waveTime = mod(iTime, waveDuration);
+    // Pulse travels from x=1.5 down to x=-0.5
+    float wavePos = 1.3 - (waveTime / (waveDuration * 0.5));
+    float pulseWidth = 0.25;
+    // Gaussian-like pulse for "flowing in and out" effect
+    float dist = abs(uv.x - wavePos);
+    float waveImpact = exp(-pow(dist / pulseWidth, 2.0));
+    
+    vec4 fragColor;
     vec2 space = (fragCoord - iResolution.xy / 2.0) / iResolution.x * 2.0 * scale;
 
     float horizontalFade = 1.0 - (cos(uv.x * 6.28) * 0.5 + 0.5);
@@ -66,9 +79,9 @@ const FS_SOURCE = `
     space.y += random(space.x * warpFrequency + iTime * warpSpeed) * warpAmplitude * (0.5 + horizontalFade);
     space.x += random(space.y * warpFrequency + iTime * warpSpeed + 2.0) * warpAmplitude * horizontalFade;
 
-    vec4 lines = vec4(0.0);
-    vec4 bgColor1 = vec4(0.02, 0.03, 0.12, 1.0);
-    vec4 bgColor2 = vec4(0.06, 0.08, 0.28, 1.0);
+    float lineAlpha = 0.0;
+    vec4 bgColor1 = vec4(0.98, 0.97, 0.96, 1.0);
+    vec4 bgColor2 = vec4(0.95, 0.94, 0.96, 1.0);
 
     for(int l = 0; l < linesPerGroup; l++) {
       float normalizedLineIndex = float(l) / float(linesPerGroup);
@@ -85,13 +98,16 @@ const FS_SOURCE = `
       float circle = drawCircle(circlePosition, 0.01, space) * 4.0;
 
       line = line + circle;
-      lines += line * lineColor * rand;
+      lineAlpha += line * rand;
     }
 
     fragColor = mix(bgColor1, bgColor2, uv.x);
-    fragColor *= verticalFade;
+    // Transition base silver to navy (#101049) smoothly as the Gaussian pulse strikes
+    vec4 currentLineColor = mix(baseLineColor, activeLineColor, waveImpact);
+    
+    float alphaMask = clamp(lineAlpha * verticalFade, 0.0, 1.0);
+    fragColor = mix(fragColor, currentLineColor, alphaMask);
     fragColor.a = 1.0;
-    fragColor += lines;
 
     gl_FragColor = fragColor;
   }
@@ -164,7 +180,7 @@ export function ShaderBackground() {
 
     const render = () => {
       const currentTime = (Date.now() - startTime) / 1000;
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clearColor(0.98, 0.97, 0.96, 1.0); // off-white
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.useProgram(shaderProgram);
       gl.uniform2f(resolutionLoc, canvas.width, canvas.height);
@@ -188,7 +204,7 @@ export function ShaderBackground() {
   }, []);
 
   return (
-    <div ref={wrapRef} className="pointer-events-none absolute inset-0 h-full min-h-full w-full">
+    <div key="light-mode-fix-v4" ref={wrapRef} className="pointer-events-none absolute inset-0 h-full min-h-full w-full">
       <canvas ref={canvasRef} className="block h-full w-full" aria-hidden />
     </div>
   );

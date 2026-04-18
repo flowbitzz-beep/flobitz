@@ -24,72 +24,72 @@ export function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="glass-panel mx-auto max-w-lg space-y-5 rounded-2xl p-8"
+      className="space-y-6"
     >
-      <div>
-        <label htmlFor="name" className="mb-2 block text-sm text-zinc-400">
-          Name
-        </label>
-        <input
-          id="name"
-          name="name"
-          required
-          autoComplete="name"
-          className="w-full rounded-lg border border-white/10 bg-black/30 px-4 py-3 text-white outline-none ring-indigo-500/30 transition placeholder:text-zinc-500 focus:border-indigo-400/60 focus:ring-2"
-          placeholder="Your name"
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label htmlFor="name" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+            Full Name
+          </label>
+          <input
+            id="name"
+            name="name"
+            required
+            autoComplete="name"
+            className="w-full rounded-xl border border-black/5 bg-black/[0.02] px-4 py-3.5 text-zinc-900 outline-none transition-all placeholder:text-zinc-300 focus:border-[#0f0e47]/20 focus:bg-white focus:ring-4 focus:ring-[#0f0e47]/5 shadow-sm"
+            placeholder="John Doe"
+          />
+        </div>
+        <div>
+          <label htmlFor="email" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+            Email Address
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            className="w-full rounded-xl border border-black/5 bg-black/[0.02] px-4 py-3.5 text-zinc-900 outline-none transition-all placeholder:text-zinc-300 focus:border-[#0f0e47]/20 focus:bg-white focus:ring-4 focus:ring-[#0f0e47]/5 shadow-sm"
+            placeholder="john@example.com"
+          />
+        </div>
       </div>
       <div>
-        <label htmlFor="email" className="mb-2 block text-sm text-zinc-400">
-          Email
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          autoComplete="email"
-          className="w-full rounded-lg border border-white/10 bg-black/30 px-4 py-3 text-white outline-none ring-indigo-500/30 transition placeholder:text-zinc-500 focus:border-indigo-400/60 focus:ring-2"
-          placeholder="you@company.com"
-        />
-      </div>
-      <div>
-        <label htmlFor="subject" className="mb-2 block text-sm text-zinc-400">
-          Subject
+        <label htmlFor="subject" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+          Inquiry Subject
         </label>
         <input
           id="subject"
           name="subject"
-          className="w-full rounded-lg border border-white/10 bg-black/30 px-4 py-3 text-white outline-none ring-indigo-500/30 transition placeholder:text-zinc-500 focus:border-indigo-400/60 focus:ring-2"
+          className="w-full rounded-xl border border-black/5 bg-black/[0.02] px-4 py-3.5 text-zinc-900 outline-none transition-all placeholder:text-zinc-300 focus:border-[#0f0e47]/20 focus:bg-white focus:ring-4 focus:ring-[#0f0e47]/5 shadow-sm"
           placeholder="How can we help?"
         />
       </div>
       <div>
-        <label htmlFor="message" className="mb-2 block text-sm text-zinc-400">
-          Message
+        <label htmlFor="message" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+          Project Details
         </label>
         <textarea
           id="message"
           name="message"
           required
-          rows={5}
-          className="w-full resize-y rounded-lg border border-white/10 bg-black/30 px-4 py-3 text-white outline-none ring-indigo-500/30 transition placeholder:text-zinc-500 focus:border-indigo-400/60 focus:ring-2"
-          placeholder="Tell us about your project or goals."
+          rows={4}
+          className="w-full resize-none rounded-xl border border-black/5 bg-black/[0.02] px-4 py-3.5 text-zinc-900 outline-none transition-all placeholder:text-zinc-300 focus:border-[#0f0e47]/20 focus:bg-white focus:ring-4 focus:ring-[#0f0e47]/5 shadow-sm"
+          placeholder="Tell us about your project or goals..."
         />
       </div>
       <button
         type="submit"
-        className="w-full rounded-full border border-indigo-500/40 bg-indigo-600 py-3 text-sm font-semibold text-white shadow-md shadow-indigo-500/20 transition hover:bg-indigo-700"
+        className="group relative w-full overflow-hidden rounded-xl bg-[#0f0e47] py-4 text-xs font-bold uppercase tracking-[0.2em] text-white transition-all hover:bg-[#1a1a6b] active:scale-[0.98] shadow-lg shadow-[#0f0e47]/10"
       >
-        Contact us today
+        <span className="relative z-10 transition-transform group-hover:-translate-y-px">
+          Send Message
+        </span>
       </button>
       {sent ? (
-        <p className="text-center text-sm text-indigo-300">
-          If your email client did not open, write us at{" "}
-          <a href="mailto:hello@flowbitz.com" className="font-medium underline">
-            hello@flowbitz.com
-          </a>
-          .
+        <p className="text-center text-xs font-bold text-[#0f0e47] animate-pulse">
+          Your inquiry has been sent. We'll be in touch.
         </p>
       ) : null}
     </form>

@@ -18,9 +18,9 @@ const anton = Anton({
 });
 
 export const metadata: Metadata = {
-  title: "Flow Bitz — Technology, Accounting & Creative",
+  title: "Flobitz — Technology, Accounting & Creative",
   description:
-    "Flow Bitz delivers IT, accounting, graphic design, and video production for modern teams.",
+    "Flobitz provides high-end IT services, financial accounting, and creative graphic design solutions for modern businesses.",
   icons: {
     icon: [{ url: "/icon.png", type: "image/png", sizes: "32x32" }],
     apple: [{ url: "/apple-icon.png", type: "image/png", sizes: "180x180" }],
@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${anton.variable} h-full antialiased`}>
       <body
-        className={`${inter.className} min-h-full overflow-x-hidden bg-[#03050f] font-sans text-zinc-100 antialiased`}
+        className={`${inter.className} min-h-full overflow-x-hidden font-sans antialiased bg-background text-foreground`}
       >
         <SmoothScroll>
           <div className="flex min-h-full flex-col">{children}</div>

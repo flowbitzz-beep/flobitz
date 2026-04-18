@@ -13,7 +13,7 @@ export default function VideoEditingPage() {
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 pb-20 pt-24 sm:px-6 sm:pt-28">
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pb-20 pt-24 sm:px-6 sm:pt-28">
         <ScrollReveal>
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-violet-400">
             Video editing
