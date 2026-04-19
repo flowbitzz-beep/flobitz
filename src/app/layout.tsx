@@ -17,7 +17,7 @@ const anton = Anton({
   display: "swap",
 });
 
-const baseUrl = "https://flobitz.ae";
+const baseUrl = "https://flobitz.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
