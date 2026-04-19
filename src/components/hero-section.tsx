@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useMemo } from "react";
+import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 export type HeroThumbnail = {
   src: string;
@@ -37,38 +37,37 @@ export function HeroSection({
   ctaHref = "/contact",
   ctaLabel = "Discover more",
 }: HeroSectionProps) {
-  const [waveImpact, setWaveImpact] = useState(0); // 0 to 1 intensity
+  // Refs for direct DOM mutation — avoids 60fps React re-renders
+  const word1Ref = useRef<HTMLSpanElement>(null);
+  const word2Ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     let raf: number;
     const startTime = Date.now();
-    
+
     const update = () => {
       const iTime = (Date.now() - startTime) / 1000;
-      const waveDuration = 10.0; // Synced with shader
+      const waveDuration = 10.0;
       const waveTime = iTime % waveDuration;
-      // Mirror the shader's Gaussian wavePos logic: 1.3 -> -0.5
-      const wavePos = 1.3 - (waveTime / (waveDuration * 0.5));
-      
-      // We want to trigger the glisten when the Gaussian wavePos is over the text
-      // Text is roughly at uv.x [0.1, 0.5]. 
-      // This maps wavePos directly to a normalized impact on the text.
-      setWaveImpact(wavePos);
-      
+      const wavePos = 1.3 - waveTime / (waveDuration * 0.5);
+      const pct = wavePos * 100;
+
+      if (word1Ref.current) {
+        word1Ref.current.style.backgroundImage = `linear-gradient(to right, #E2E1DD 0%, #E2E1DD ${Math.max(0, pct - 15)}%, #0f0f45 ${pct}%, #E2E1DD ${Math.min(100, pct + 15)}%, #E2E1DD 100%)`;
+      }
+      if (word2Ref.current) {
+        word2Ref.current.style.backgroundImage = `linear-gradient(to right, black 0%, black ${Math.max(0, pct - 10)}%, #0f0f45 ${pct}%, black ${Math.min(100, pct + 10)}%, black 100%)`;
+      }
+
       raf = requestAnimationFrame(update);
     };
-    
+
     raf = requestAnimationFrame(update);
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  function smoothstep(min: number, max: number, value: number) {
-    const x = Math.max(0, Math.min(1, (value - min) / (max - min)));
-    return x * x * (3 - 2 * x);
-  }
-
   return (
-    <section className="relative min-h-dvh w-full overflow-hidden bg-background">
+    <section className="relative min-h-svh w-full overflow-hidden bg-background">
       {/* Full-bleed character image or custom bg — right portion */}
       <div className="absolute inset-0 z-0 bg-background">
         {bgComponent ? (
@@ -90,7 +89,7 @@ export function HeroSection({
       </div>
 
       {/* Content layer */}
-      <div className="relative z-10 flex min-h-dvh flex-col">
+      <div className="relative z-10 flex min-h-svh flex-col">
         {/* Giant typography */}
         <div className="flex flex-1 flex-col justify-center px-6 pb-8 pt-28 sm:px-10 sm:pt-32 lg:px-16">
           <motion.div
@@ -99,12 +98,10 @@ export function HeroSection({
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease }}
           >
-            <span 
+            <span
+              ref={word1Ref}
               className="block font-sans font-bold text-[clamp(2.5rem,7vw,5.5rem)] uppercase leading-[0.9] tracking-tight bg-clip-text text-transparent"
-              style={{
-                backgroundImage: `linear-gradient(to right, #E2E1DD 0%, #E2E1DD ${Math.max(0, waveImpact * 100 - 15)}%, #0f0f45 ${waveImpact * 100}%, #E2E1DD ${Math.min(100, waveImpact * 100 + 15)}%, #E2E1DD 100%)`,
-                WebkitBackgroundClip: 'text',
-              }}
+              style={{ WebkitBackgroundClip: 'text', backgroundImage: 'linear-gradient(to right, #E2E1DD, #E2E1DD)' }}
             >
               {wordOne}
             </span>
@@ -116,12 +113,10 @@ export function HeroSection({
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.9, delay: 0.08, ease }}
           >
-            <span 
+            <span
+              ref={word2Ref}
               className="block font-sans font-bold text-[clamp(3.5rem,11vw,9rem)] uppercase leading-[0.9] tracking-tight bg-clip-text text-transparent drop-shadow-sm"
-              style={{
-                backgroundImage: `linear-gradient(to right, black 0%, black ${Math.max(0, waveImpact * 100 - 10)}%, #0f0f45 ${waveImpact * 100}%, black ${Math.min(100, waveImpact * 100 + 10)}%, black 100%)`,
-                WebkitBackgroundClip: 'text',
-              }}
+              style={{ WebkitBackgroundClip: 'text', backgroundImage: 'linear-gradient(to right, black, black)' }}
             >
               {wordTwo}
             </span>

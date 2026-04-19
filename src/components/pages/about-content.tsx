@@ -79,9 +79,9 @@ export function AboutContent() {
           <div className="absolute inset-0 z-0 [mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)]">
             <SmokeBackground smokeColor="#0f0e47" />
           </div>
-          <div className="mx-auto w-full max-w-7xl px-5 sm:px-8 relative z-10 pt-20">
+          <div className="mx-auto w-full max-w-5xl px-5 sm:px-8 relative z-10 pt-20 text-center">
             <ScrollReveal>
-              <h1 className="font-sans font-black text-[clamp(2.5rem,8vw,6rem)] uppercase tracking-tighter leading-none text-black flex flex-wrap items-baseline gap-x-4">
+              <h1 className="font-sans font-black text-[clamp(2.5rem,8vw,6rem)] uppercase tracking-tighter leading-none text-black flex flex-wrap items-baseline justify-center gap-x-4">
                 ABOUT
                 <span className="relative inline-block bg-clip-text text-transparent animate-smoke-text"
                       style={{ 
@@ -89,7 +89,7 @@ export function AboutContent() {
                         backgroundColor: '#E2E1DD', WebkitBackgroundClip: 'text', WebkitTextStroke: '1px rgba(226, 225, 221, 0.4)'
                       }}>US</span>
               </h1>
-              <p className="mt-12 max-w-2xl text-base sm:text-lg text-zinc-500 leading-snug">
+              <p className="mt-10 mx-auto max-w-2xl text-base sm:text-lg text-zinc-500 leading-snug">
                 Flobitz is a dynamic and forward-thinking company delivering high-quality IT, financial, and graphic design solutions to businesses of all sizes. With over 3+ years of industry experience, we have built a strong foundation of trust, innovation, and excellence.
               </p>
             </ScrollReveal>

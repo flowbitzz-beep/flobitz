@@ -75,6 +75,7 @@ export function SiteHeader() {
   return (
     <>
       <header
+        style={{ transform: "translateZ(0)", willChange: "transform" }}
         className={[
           "fixed inset-x-0 top-0 z-[60]",
           "transition-[background-color,backdrop-filter,box-shadow,border-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
@@ -166,20 +167,6 @@ export function SiteHeader() {
                   </motion.div>
                 );
               })}
-              
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 }}
-                className="mt-8"
-              >
-                 <Link 
-                   href="/contact"
-                   className="rounded-full bg-[#0f0e47] px-10 py-4 text-[10px] font-bold uppercase tracking-[0.2em] text-white shadow-2xl transition-transform active:scale-95"
-                 >
-                   Contact Us
-                 </Link>
-              </motion.div>
             </nav>
           </motion.div>
         )}
